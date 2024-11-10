@@ -1,0 +1,56 @@
+import copy
+
+# Global list to keep track of visited states to avoid infinite loops
+visited_states = []
+
+# Heuristic function: calculates score based on misplaced blocks
+def heuristic(curr_state, goal_state):
+    goal_ = goal_state[3]
+    val = 0
+    for stack in curr_state:
+        for j, block in enumerate(stack):
+            val += j if block == goal_[j] else -j
+    return val
+
+# Generate the next possible state from the current state
+def generate_next(curr_state, prev_heu, goal_state):
+    global visited_states
+    for i, stack in enumerate(curr_state):
+        if stack:
+            temp = copy.deepcopy(curr_state)
+            elem = temp[i].pop()
+            for j in range(len(temp)):
+                if j != i:
+                    temp1 = copy.deepcopy(temp)
+                    temp1[j].append(elem)
+                    if temp1 not in visited_states:
+                        curr_heu = heuristic(temp1, goal_state)
+                        if curr_heu > prev_heu:
+                            return temp1
+    return None
+
+# Main function to solve the problem
+def solution_(init_state, goal_state):
+    global visited_states
+    current_state = copy.deepcopy(init_state)
+    
+    while current_state != goal_state:
+        visited_states.append(current_state)
+        print("Current state:", current_state)
+        
+        prev_heu = heuristic(current_state, goal_state)
+        child = generate_next(current_state, prev_heu, goal_state)
+        
+        if child is None:
+            print("Final state:", current_state)
+            return
+        
+        current_state = child
+
+# Solver function to initialize and start the solution
+def solver():
+    init_state = [[], [], [], ['B', 'C', 'D', 'A']]
+    goal_state = [[], [], [], ['A', 'B', 'C', 'D']]
+    solution_(init_state, goal_state)
+
+solver()
