@@ -1,0 +1,58 @@
+from collections import defaultdict
+
+# Define a large value representing infinity
+INT_MAX = 2147483647
+
+# Function to find the minimum cost path
+def findMinRoute(tsp):
+    total_cost = 0
+    counter = 0
+    j = 0
+    i = 0
+    min_cost = INT_MAX
+    visitedRouteList = defaultdict(int)
+
+    # Starting from the 0th indexed city
+    visitedRouteList[0] = 1
+    route = [0] * len(tsp)
+
+    # Traverse the adjacency matrix tsp[][]
+    while i < len(tsp) and j < len(tsp[i]):
+        # If all cities have been visited, exit the loop
+        if counter >= len(tsp[i]) - 1:
+            break
+
+        # If this path is unvisited and cost is less, update the minimum cost
+        if j != i and visitedRouteList[j] == 0:
+            if tsp[i][j] < min_cost:
+                min_cost = tsp[i][j]
+                route[counter] = j + 1
+
+        j += 1
+
+        # If end of row is reached, update visited and reset counters
+        if j == len(tsp[i]):
+            total_cost += min_cost
+            min_cost = INT_MAX
+            visitedRouteList[route[counter] - 1] = 1
+            j = 0
+            i = route[counter] - 1
+            counter += 1
+
+    # Complete the path back to the starting city
+    i = route[counter - 1] - 1
+    for j in range(len(tsp)):
+        if i != j and tsp[i][j] < min_cost:
+            min_cost = tsp[i][j]
+            route[counter] = j + 1
+    total_cost += min_cost
+
+    # Output the result
+    print("Minimum Cost is:", total_cost)
+
+# Driver Code
+if __name__ == "__main__":
+    # Input Matrix
+    tsp = [[-1, 10, 15, 20], [10, -1, 35, 25], [15, 35, -1, 30], [20, 25, 30, -1]]
+    # Function Call
+    findMinRoute(tsp)
